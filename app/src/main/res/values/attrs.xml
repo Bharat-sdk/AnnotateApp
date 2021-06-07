@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="IconCropView">
+        <attr name="minimumSide" format="dimension"/>
+        <attr name="resizeCornerDrawable" format="reference"/>
+        <attr name="moveCornerDrawable" format="reference"/>
+        <attr name="cornerColor" format="color"/>
+        <attr name="edgeColor" format="color" />
+        <attr name="outsideCropColor" format="color" />
+        <attr name="edgecornerSize" format="dimension" />
+        <attr name="android:textSize" format="dimension"/>
+        <attr name="android:textStyle" format="flags"/>
+        <attr name="android:text" format="string"/>
+    </declare-styleable>
+</resources>
