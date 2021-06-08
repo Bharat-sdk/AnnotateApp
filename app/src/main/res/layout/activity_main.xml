@@ -25,12 +25,12 @@
         android:layout_height="0dp"
         android:id="@+id/marker"
         android:background="@android:color/transparent"
-        app:minimumSide="60dp"
+        app:minimumSide="50dp"
         android:textSize="22sp"
         android:textStyle="italic"
         app:resizeCornerDrawable="@drawable/moving_area"
         app:moveCornerDrawable="@drawable/moving_area"
-        app:cornerColor="@color/red"
+        app:cornerColor="#00000000"
         app:edgeColor="@color/black"
         app:outsideCropColor="#00000000"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
         app:layout_constraintHeight_percent=".7"
         app:layout_constraintWidth_percent=".9"
         android:layout_marginTop="70dp"
-        app:edgecornerSize="20dp" />
+        app:edgecornerSize="30dp" />
 
     <LinearLayout
         android:layout_width="0dp"
