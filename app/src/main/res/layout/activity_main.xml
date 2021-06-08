@@ -28,9 +28,9 @@
         app:minimumSide="60dp"
         android:textSize="22sp"
         android:textStyle="italic"
-        app:resizeCornerDrawable="@drawable/adjust_edge_circle"
-        app:moveCornerDrawable="@drawable/move_box_circle"
-        app:cornerColor="@color/black"
+        app:resizeCornerDrawable="@drawable/moving_area"
+        app:moveCornerDrawable="@drawable/moving_area"
+        app:cornerColor="@color/red"
         app:edgeColor="@color/black"
         app:outsideCropColor="#00000000"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,8 +40,9 @@
         app:layout_constraintHeight_percent=".7"
         app:layout_constraintWidth_percent=".9"
         android:layout_marginTop="70dp"
-        android:visibility="invisible"
+
         app:edgecornerSize="10dp" />
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
