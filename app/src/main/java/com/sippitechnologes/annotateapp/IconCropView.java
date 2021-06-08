@@ -35,6 +35,7 @@ public class IconCropView extends View {
     private int halfCorner;
     private int cornerColor;
     private int edgeColor;
+    private int textColor;
     private int outsideColor;
     private int corner = 5;
     private int textZize;
@@ -102,6 +103,7 @@ public class IconCropView extends View {
         //colors
         cornerColor = ta.getColor(R.styleable.IconCropView_cornerColor, Color.BLACK);
         edgeColor = ta.getColor(R.styleable.IconCropView_edgeColor, Color.WHITE);
+        textColor = edgeColor;
         outsideColor = ta.getColor(R.styleable.IconCropView_outsideCropColor, Color.parseColor("#00000088"));
 
         //initialize corners;
@@ -162,7 +164,7 @@ public class IconCropView extends View {
 
             painttxt.setAntiAlias(true);
             painttxt.setStyle(Paint.Style.FILL_AND_STROKE);
-            painttxt.setColor(edgeColor);
+            painttxt.setColor(textColor);
             painttxt.setTextSize(textZize);
             painttxt.setTypeface(bold);
 
@@ -374,7 +376,11 @@ public class IconCropView extends View {
     public Void changeEdgeColor(int color)
     {
         this.edgeColor = color;
-        this.cornerColor = color;
+        return null;
+    }
+    public Void changetextColor(int color1)
+    {
+        this.textColor = color1;
         return null;
     }
 }

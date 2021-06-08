@@ -31,10 +31,16 @@ IconCropView iconCropView;
         annotate = findViewById(R.id.annotatebtn);
         show_cropping_area = findViewById(R.id.show_cropping_area);
         iconCropView = findViewById(R.id.marker);
+        //color for the rectangle
         red_box = findViewById(R.id.red_box);
         blue_box = findViewById(R.id.blue_box);
         green_box = findViewById(R.id.green_box);
         yellow_box = findViewById(R.id.yellow_box);
+        //color for the text
+        red_txt = findViewById(R.id.red_color_txt);
+        blue_txt= findViewById(R.id.blue_color_txt);
+        green_txt = findViewById(R.id.green_color_txt);
+        yellow_txt = findViewById(R.id.yellow_color_txt);
 
         annotate.setOnClickListener(this);
         show_cropping_area.setOnClickListener(this);
@@ -42,6 +48,10 @@ IconCropView iconCropView;
         green_box.setOnClickListener(this::onClick);
         yellow_box.setOnClickListener(this::onClick);
         blue_box.setOnClickListener(this::onClick);
+        red_txt.setOnClickListener(this::onClick);
+        green_txt.setOnClickListener(this::onClick);
+        yellow_txt.setOnClickListener(this::onClick);
+        blue_txt.setOnClickListener(this::onClick);
 
 
 
@@ -112,6 +122,33 @@ IconCropView iconCropView;
                 iconCropView.invalidate();
             }
             break;
+            case R.id.red_color_txt:
+            {
+                iconCropView.changetextColor(getResources().getColor(R.color.red));
+                iconCropView.invalidate();
+
+            }
+            break;
+            case R.id.blue_color_txt:
+            {
+                iconCropView.changetextColor(getResources().getColor(R.color.blue));
+                iconCropView.invalidate();
+
+            }
+            break;
+            case R.id.green_color_txt:
+            {
+                iconCropView.changetextColor(getResources().getColor(R.color.green));
+                iconCropView.invalidate();
+            }
+            break;
+            case R.id.yellow_color_txt:
+            {
+                iconCropView.changetextColor(getResources().getColor(R.color.yellow));
+                iconCropView.invalidate();
+            }
+            break;
+
 
         }
     }
