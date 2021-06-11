@@ -4,4 +4,17 @@
     <string name="camera">Camera</string>
     <string name="search">Search</string>
     <string name="saved_files">Saved Files</string>
+    <string name="camera_permission">Camera Permission</string>
+    <string name="allow">Allow</string>
+    <string name="cancel">Cancel</string>
+    <string name="camera_access_required">Camera Permission Required</string>
+    <string name="ok">Ok</string>
+    <string name="camera_unavailable">Camera Unavailable</string>
+    <string name="camera_permission_available">Camera Permission Available</string>
+    <string name="intro">How to use Permissioni In Android</string>
+    <string name="open_camera_preview">Open Camera</string>
+    <string name="camera_permission_granted">Camera Permission Granted</string>
+    <string name="camera_permission_denied">Camera Permission Denied</string>
+    <string name="take_imagefrom_gallery">Gallery</string>
+    <string name="takeimagefromcamera">Camera</string>
 </resources>

@@ -7,59 +7,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-
-    <ImageView
-        android:id="@+id/crop_image"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:id="@+id/pic_taker"
+        app:layout_constraintHeight_percent=".7"
+        app:layout_constraintWidth_percent=".9"
+        android:layout_marginTop="70dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    <ImageView
+        android:id="@+id/crop_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
        android:elevation="16dp"
         android:padding="8dp"
         android:scaleType="centerCrop"
         android:cropToPadding="true"
         android:background="#EE41444C"
-        app:layout_constraintHeight_percent=".7"
-        app:layout_constraintWidth_percent=".9"
-        android:layout_marginTop="70dp"
+        android:src="@drawable/tulsi"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/tulsi" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <com.sippitechnologes.annotateapp.IconCropView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:id="@+id/marker"
-        android:background="@android:color/transparent"
-        app:minimumSide="50dp"
-        android:textSize="22sp"
-        android:textStyle="italic"
-        app:resizeCornerDrawable="@drawable/moving_area"
-        app:moveCornerDrawable="@drawable/moving_area"
-        app:cornerColor="#00000000"
-        app:edgeColor="@color/black"
-        app:outsideCropColor="#00000000"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text=""
-        android:visibility="invisible"
-        app:layout_constraintHeight_percent=".7"
-        app:layout_constraintWidth_percent=".9"
-        android:layout_marginTop="70dp"
-        app:edgecornerSize="30dp"
-        android:elevation="16dp"/>
+        <com.sippitechnologes.annotateapp.IconCropView
+            android:id="@+id/marker"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:elevation="17dp"
+            android:text=""
+            android:textSize="22sp"
+            android:textStyle="italic"
+            android:visibility="invisible"
+            app:cornerColor="#00000000"
+            app:edgeColor="@color/black"
+            app:edgecornerSize="30dp"
+            app:minimumSide="50dp"
+            app:moveCornerDrawable="@drawable/moving_area"
+            app:outsideCropColor="#00000000"
+            app:resizeCornerDrawable="@drawable/moving_area"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:id="@+id/layout_crop_marker"
-        app:layout_constraintTop_toBottomOf="@id/marker"
+        app:layout_constraintTop_toBottomOf="@id/pic_taker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent=".9"
         android:layout_marginTop="20dp"
-        android:gravity="center"
-        >
+        android:gravity="center">
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -160,7 +164,8 @@
             android:layout_marginStart="15dp"
             android:backgroundTint="#00000000"
             android:elevation="6dp"
-            />       <ImageButton
+            />
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_save_24"
