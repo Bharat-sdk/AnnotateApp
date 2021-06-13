@@ -1,5 +1,6 @@
 package com.sippitechnologes.annotateapp;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -12,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,7 +31,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     Button getAnnotate,getCancel;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     AlertDialog alertDialog;
     IconCropView iconCropView;
     Uri uri_image;
-    OutputStream outputStream;
+    FileOutputStream outputStream;
 
 
     public final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -133,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return alertDialog;
     }
 
+
     @Override
     public void onClick(View v) {
         switch (v.getId())
@@ -217,9 +219,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 view.setDrawingCacheEnabled(true);
                 view.buildDrawingCache();
                 Bitmap bm = view.getDrawingCache();
-                String name = iconCropView.getText();
-
-                createDirectoryAndSaveFile(bm,name);
+               String name = iconCropView.getText();
+             createDirectoryAndSaveFile(bm,name);
 
             }
 
@@ -232,19 +233,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         iconCropView.setText(notation);
         iconCropView.invalidate();
     }
+
+
     private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
         requestForExternalStoragePermission();
-        File filepath = Environment.getExternalStorageDirectory();
-        File  imagedir = new File(filepath.getAbsolutePath()+"/ImageAnnotation");
-        imagedir.mkdir();
-        File file = new File(imagedir,fileName+System.currentTimeMillis()+".jpg");
+if(Build.VERSION.SDK_INT >=Build.VERSION_CODES.R)
+{
+    Toast.makeText(getApplicationContext(),"Your are in Version R",Toast.LENGTH_SHORT).show();
+    String path1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/Image_Annotation_App";
+    createFolder(path1);
+ if (createFolder(path1).exists()) {
+        File file = new File(path1+"/"+fileName);
+        if (file.exists()) {
+        } else {
+            createFolder(path1+"/"+fileName);
+        }
+    }
+    saveImage(imageToSave,fileName,path1+"/"+fileName);
+}
+else {
+    String path = Environment.getExternalStorageDirectory() + "/Image_Annotation_App";
+    createFolder(path);
+    if (createFolder(path).exists()) {
+        File file = new File(path+"/"+fileName);
+            if (file.exists()) {
+        } else {
+                createFolder(path+"/"+fileName);
+            }
+        }
+    saveImage(imageToSave,fileName,path+"/"+fileName);
+    }
+    }
+
+
+
+    public File createFolder(String dirpath)
+    {
+        File dir = new File(dirpath);
+        if(dir.isDirectory())
+        {
+
+        }
+        else {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+
+
+
+    public void saveImage(Bitmap bms, String imagename, String path)
+    {
+       File file = new File(path,imagename+System.currentTimeMillis()+".png");
         try {
             outputStream = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        imageToSave.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
-        Toast.makeText(getApplicationContext(),"File Saved",Toast.LENGTH_LONG).show();
+        bms.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+        Toast.makeText(getApplicationContext(),"File Saved",Toast.LENGTH_SHORT).show();
         try {
             outputStream.flush();
         } catch (IOException e) {
