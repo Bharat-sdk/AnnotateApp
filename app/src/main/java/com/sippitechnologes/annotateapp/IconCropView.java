@@ -383,4 +383,8 @@ public class IconCropView extends View {
         this.textColor = color1;
         return null;
     }
+    public String getText()
+    {
+        return text;
+    }
 }
