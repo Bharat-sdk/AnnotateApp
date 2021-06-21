@@ -21,6 +21,7 @@ public class IconCropView extends View {
     //contants strings
     private static final String TAG = "IconCropView";
 
+
     //drawing objects
     private Paint paint,painttxt;
 
@@ -387,4 +388,60 @@ public class IconCropView extends View {
     {
         return text;
     }
+    public int getMinimumSideLength() {
+        return minimumSideLength;
+    }
+
+    public void setMinimumSideLength(int minimumSideLength) {
+        this.minimumSideLength = minimumSideLength;
+    }
+
+    public int getHalfCorner() {
+        return halfCorner;
+    }
+
+    public void setHalfCorner(int halfCorner) {
+        this.halfCorner = halfCorner;
+    }
+
+    public int getCornerColor() {
+        return cornerColor;
+    }
+
+    public void setCornerColor(int cornerColor) {
+        this.cornerColor = cornerColor;
+    }
+
+    public int getEdgeColor() {
+        return edgeColor;
+    }
+
+    public void setEdgeColor(int edgeColor) {
+        this.edgeColor = edgeColor;
+    }
+
+    public int getTextColor() {
+        return textColor;
+    }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
+    }
+
+    public int getOutsideColor() {
+        return outsideColor;
+    }
+
+    public void setOutsideColor(int outsideColor) {
+        this.outsideColor = outsideColor;
+    }
+
+    public int getCorner() {
+        return corner;
+    }
+
+    public void setCorner(int corner) {
+        this.corner = corner;
+    }
+
 }

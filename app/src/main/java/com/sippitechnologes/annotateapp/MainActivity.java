@@ -1,74 +1,48 @@
 package com.sippitechnologes.annotateapp;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    Button getAnnotate,getCancel;
+    Button getAnnotate,getCancel,getSave;
     ImageButton annotate,show_cropping_area,red_box,blue_box,green_box,yellow_box,red_txt,blue_txt,green_txt,yellow_txt;
     ImageButton save,refresh;
     ImageView imageView;
-    TextView label;
-    AlertDialog alertDialog;
-    IconCropView iconCropView;
+    EditText label,folderName;
+    AlertDialog annotationAlertDialog,folderAlertDialog;
+    com.sippitechnologes.annotateapp.IconCropView iconCropView1;
     Uri uri_image;
     FileOutputStream outputStream;
+    String path;
+     StorageReference mStorageRef;
 
 
-    public final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-    public final int EXTERNAL_REQUEST = 138;
-
-    public boolean requestForExternalStoragePermission() {
-
-        boolean isPermissionOn = true;
-        final int version = Build.VERSION.SDK_INT;
-        if (version >= 23) {
-            if (!canAccessExternalSd()) {
-                isPermissionOn = false;
-                requestPermissions(EXTERNAL_PERMS, EXTERNAL_REQUEST);
-            }
-        }
-
-        return isPermissionOn;
-    }
-
-    public boolean canAccessExternalSd() {
-        return (hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE));
-    }
-
-    private boolean hasPermission(String perm) {
-        return (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, perm));
-
-    }
 
 
     @Override
@@ -77,11 +51,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
 
-        alertDialog = createDialog();
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+
+        annotationAlertDialog = createAnnotateDialog();
+        folderAlertDialog = createFolderDialog();
 
         annotate = findViewById(R.id.annotatebtn);
         show_cropping_area = findViewById(R.id.show_cropping_area);
-        iconCropView = findViewById(R.id.marker);
         //color for the rectangle
         red_box = findViewById(R.id.red_box);
         blue_box = findViewById(R.id.blue_box);
@@ -121,13 +97,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    AlertDialog createDialog()
+    AlertDialog createAnnotateDialog()
     {
 
         View view = LayoutInflater.from(this).inflate(R.layout.annotate_dialog,null, false);
         getAnnotate = view.findViewById(R.id.btn_annotate);
         getCancel = view.findViewById(R.id.btn_cancel);
         label = view.findViewById(R.id.SwapName1);
+        getAnnotate.setOnClickListener(this);
+        getCancel.setOnClickListener(this);
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view).create();
+        return alertDialog;
+    }
+    AlertDialog createFolderDialog()
+    {
+
+        View view = LayoutInflater.from(this).inflate(R.layout.save_to_folder_dialog,null, false);
+        getSave = view.findViewById(R.id.btn_save);
+        getCancel = view.findViewById(R.id.btn_cancel);
+        folderName = view.findViewById(R.id.folder_name);
         getAnnotate.setOnClickListener(this);
         getCancel.setOnClickListener(this);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view).create();
@@ -141,76 +129,80 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             case R.id.btn_annotate:
             {
-                alertDialog.dismiss();
+                annotationAlertDialog.dismiss();
                 createTextView(label.getText().toString());
 
             }
             break;
             case  R.id.btn_cancel:
             {
-                alertDialog.dismiss();
+                annotationAlertDialog.dismiss();
             }
             break;
             case R.id.show_cropping_area:
             {
-                iconCropView.setVisibility(View.VISIBLE);
+                ConstraintLayout parentOfAnnotateView = findViewById(R.id.pic_taker);
+                iconCropView1 = (IconCropView) View.inflate(this, R.layout.rectangular_crop_voew, null);
+                parentOfAnnotateView.addView(iconCropView1);
+
             }
             break;
             case R.id.annotatebtn:
             {
-                alertDialog.show();
+                annotationAlertDialog.show();
             }
             break;
             case R.id.red_box:
             {
-                iconCropView.changeEdgeColor(getResources().getColor(R.color.red));
-                iconCropView.invalidate();
+                iconCropView1.changeEdgeColor(getResources().getColor(R.color.red));
+                iconCropView1.invalidate();
 
             }
             break;
             case R.id.blue_box:
             {
-                iconCropView.changeEdgeColor(getResources().getColor(R.color.blue));
-                iconCropView.invalidate();
+                iconCropView1.changeEdgeColor(getResources().getColor(R.color.blue));
+                iconCropView1.invalidate();
 
             }
             break;
             case R.id.green_box:
             {
-                iconCropView.changeEdgeColor(getResources().getColor(R.color.green));
-                iconCropView.invalidate();
+                iconCropView1.changeEdgeColor(getResources().getColor(R.color.green));
+                iconCropView1.invalidate();
             }
             break;
             case R.id.yellow_box:
             {
-                iconCropView.changeEdgeColor(getResources().getColor(R.color.yellow));
-                iconCropView.invalidate();
+                iconCropView1.changeEdgeColor(getResources().getColor(R.color.yellow));
+                iconCropView1.invalidate();
+
             }
             break;
             case R.id.red_color_txt:
             {
-                iconCropView.changetextColor(getResources().getColor(R.color.red));
-                iconCropView.invalidate();
+                iconCropView1.changetextColor(getResources().getColor(R.color.red));
+                iconCropView1.invalidate();
 
             }
             break;
             case R.id.blue_color_txt:
             {
-                iconCropView.changetextColor(getResources().getColor(R.color.blue));
-                iconCropView.invalidate();
+                iconCropView1.changetextColor(getResources().getColor(R.color.blue));
+                iconCropView1.invalidate();
 
             }
             break;
             case R.id.green_color_txt:
             {
-                iconCropView.changetextColor(getResources().getColor(R.color.green));
-                iconCropView.invalidate();
+                iconCropView1.changetextColor(getResources().getColor(R.color.green));
+                iconCropView1.invalidate();
             }
             break;
             case R.id.yellow_color_txt:
             {
-                iconCropView.changetextColor(getResources().getColor(R.color.yellow));
-                iconCropView.invalidate();
+                iconCropView1.changetextColor(getResources().getColor(R.color.yellow));
+                iconCropView1.invalidate();
             }
             break;
             case R.id.save:
@@ -219,8 +211,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 view.setDrawingCacheEnabled(true);
                 view.buildDrawingCache();
                 Bitmap bm = view.getDrawingCache();
-               String name = iconCropView.getText();
-             createDirectoryAndSaveFile(bm,name);
+                folderAlertDialog.show();
+
+                saveImageInFirebase(bm,folderName.getText().toString());
 
             }
 
@@ -230,78 +223,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void createTextView(String notation)
     {
-        iconCropView.setText(notation);
-        iconCropView.invalidate();
+        iconCropView1.setText(notation);
+        iconCropView1.invalidate();
     }
 
+    public void  saveImageInFirebase(Bitmap bitmapImage , String fileName)
+    {
 
-    private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
-        requestForExternalStoragePermission();
-if(Build.VERSION.SDK_INT >=Build.VERSION_CODES.R)
-{
-    Toast.makeText(getApplicationContext(),"Your are in Version R",Toast.LENGTH_SHORT).show();
-    String path1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/Image_Annotation_App";
-    createFolder(path1);
- if (createFolder(path1).exists()) {
-        File file = new File(path1+"/"+fileName);
-        if (file.exists()) {
-        } else {
-            createFolder(path1+"/"+fileName);
-        }
-    }
-    saveImage(imageToSave,fileName,path1+"/"+fileName);
-}
-else {
-    String path = Environment.getExternalStorageDirectory() + "/Image_Annotation_App";
-    createFolder(path);
-    if (createFolder(path).exists()) {
-        File file = new File(path+"/"+fileName);
-            if (file.exists()) {
-        } else {
-                createFolder(path+"/"+fileName);
+       final ProgressDialog pd = new ProgressDialog(this);
+        pd.setTitle("Uploading Image....");
+        pd.show();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmapImage.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+        byte[] data = baos.toByteArray();
+        StorageReference mountainImagesRef = mStorageRef.child("ImageAnnotation/"+fileName+"/"+fileName+System.currentTimeMillis()+".jpg");
+        UploadTask uploadTask = mountainImagesRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                pd.dismiss();
+                Toast.makeText(getApplicationContext(),"Upload Failed Please Retry",Toast.LENGTH_SHORT).show();
             }
-        }
-    saveImage(imageToSave,fileName,path+"/"+fileName);
-    }
-    }
-
-
-
-    public File createFolder(String dirpath)
-    {
-        File dir = new File(dirpath);
-        if(dir.isDirectory())
-        {
-
-        }
-        else {
-            dir.mkdirs();
-        }
-        return dir;
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                pd.dismiss();
+                Toast.makeText(getApplicationContext(),"Image Uploaded",Toast.LENGTH_SHORT).show();
+                Intent intentt = new Intent(getApplicationContext(),Home.class);
+                startActivity(intentt);
+            }
+        })
+          .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+              @Override
+              public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                   pd.setMessage(" On Progress....... ");
+              }
+          });
     }
 
-
-
-
-    public void saveImage(Bitmap bms, String imagename, String path)
-    {
-       File file = new File(path,imagename+System.currentTimeMillis()+".png");
-        try {
-            outputStream = new FileOutputStream(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        bms.compress(Bitmap.CompressFormat.PNG,100,outputStream);
-        Toast.makeText(getApplicationContext(),"File Saved",Toast.LENGTH_SHORT).show();
-        try {
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

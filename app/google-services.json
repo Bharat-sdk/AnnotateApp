@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "3326602930",
+    "project_id": "farmiotapplication",
+    "storage_bucket": "farmiotapplication.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3326602930:android:4c516f96fd3eb460e7a3ab",
+        "android_client_info": {
+          "package_name": "com.sippitechnologes.annotateapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "3326602930-fa1itae7rrvaigvj77uut89crgjl8j8m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBo77xeb8OWLeZt_kiUMVIlEm7aQzMkeSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "3326602930-fa1itae7rrvaigvj77uut89crgjl8j8m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
