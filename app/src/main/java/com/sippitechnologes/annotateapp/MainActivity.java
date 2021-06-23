@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -37,6 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     Button getAnnotate,getCancel,getSave;
@@ -50,7 +52,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FileOutputStream outputStream;
     String path;
      StorageReference mStorageRef;
-ConstraintLayout view;
+ConstraintLayout view,view_box;
+    ArrayList<Integer> idArray = new ArrayList<Integer>();
+    int position = 0;
 
 
 
@@ -85,6 +89,7 @@ ConstraintLayout view;
         imageView = findViewById(R.id.crop_image);
 
          view = findViewById(R.id.pic_taker);
+         view_box= findViewById(R.id.pic_taker1);
 
         //textbox
 
@@ -153,8 +158,7 @@ ConstraintLayout view;
             case R.id.show_cropping_area:
             {
                 iconCropView1 = (IconCropView) View.inflate(this, R.layout.rectangular_crop_voew, null);
-                view.addView(iconCropView1);
-
+                view_box.addView(iconCropView1);
             }
             break;
             case R.id.annotatebtn:
@@ -222,8 +226,7 @@ ConstraintLayout view;
             break;
             case R.id.reset:
             {
-               // view.removeView(iconCropView1);
-                view.removeViewInLayout(iconCropView1);
+               view_box.removeAllViews();
             }
             break;
             case R.id.btn_save:
