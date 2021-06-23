@@ -3,6 +3,7 @@ package com.sippitechnologes.annotateapp;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +12,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
 
@@ -19,14 +22,43 @@ public class Home extends AppCompatActivity implements View.OnClickListener {
     public static int REQUEST_IMAGE_CAPTURE = 300;
     ImageButton btn_camera, btn_gallery;
 
+    public final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    public final int EXTERNAL_REQUEST = 138;
+
+    public boolean requestForExternalStoragePermission() {
+
+        boolean isPermissionOn = true;
+        final int version = Build.VERSION.SDK_INT;
+        if (version >= 23) {
+            if (!canAccessExternalSd()) {
+                isPermissionOn = false;
+                requestPermissions(EXTERNAL_PERMS, EXTERNAL_REQUEST);
+            }
+        }
+        return isPermissionOn;
+    }
+
+    public boolean canAccessExternalSd() {
+        return (hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE));
+    }
+
+    private boolean hasPermission(String perm) {
+
+
+        return (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, perm));
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
+        requestForExternalStoragePermission();
         btn_camera = findViewById(R.id.camera);
         btn_gallery = findViewById(R.id.gallery);
         btn_camera.setOnClickListener(this);
         btn_gallery.setOnClickListener(this);
+
+
     }
 
 

@@ -4,12 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -27,12 +32,16 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     Button getAnnotate,getCancel,getSave;
     ImageButton annotate,show_cropping_area,red_box,blue_box,green_box,yellow_box,red_txt,blue_txt,green_txt,yellow_txt;
-    ImageButton save,refresh;
+    ImageButton save,reset;
     ImageView imageView;
     EditText label,folderName;
     AlertDialog annotationAlertDialog,folderAlertDialog;
@@ -41,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FileOutputStream outputStream;
     String path;
      StorageReference mStorageRef;
+ConstraintLayout view;
 
 
 
@@ -70,9 +80,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         yellow_txt = findViewById(R.id.yellow_color_txt);
         //Image refresh and save
         save = findViewById(R.id.save);
-        refresh = findViewById(R.id.refresh);
+        reset = findViewById(R.id.reset);
         //imageview
         imageView = findViewById(R.id.crop_image);
+
+         view = findViewById(R.id.pic_taker);
 
         //textbox
 
@@ -87,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         yellow_txt.setOnClickListener(this::onClick);
         blue_txt.setOnClickListener(this::onClick);
         save.setOnClickListener(this::onClick);
-        refresh.setOnClickListener(this::onClick);
+        reset.setOnClickListener(this::onClick);
 
         //Intent getting the image and setting it from camera or gallery
         Intent i = getIntent();
@@ -111,12 +123,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     AlertDialog createFolderDialog()
     {
-
         View view = LayoutInflater.from(this).inflate(R.layout.save_to_folder_dialog,null, false);
         getSave = view.findViewById(R.id.btn_save);
         getCancel = view.findViewById(R.id.btn_cancel);
         folderName = view.findViewById(R.id.folder_name);
-        getAnnotate.setOnClickListener(this);
+        getSave.setOnClickListener(this);
         getCancel.setOnClickListener(this);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view).create();
         return alertDialog;
@@ -141,9 +152,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.show_cropping_area:
             {
-                ConstraintLayout parentOfAnnotateView = findViewById(R.id.pic_taker);
                 iconCropView1 = (IconCropView) View.inflate(this, R.layout.rectangular_crop_voew, null);
-                parentOfAnnotateView.addView(iconCropView1);
+                view.addView(iconCropView1);
 
             }
             break;
@@ -207,14 +217,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             break;
             case R.id.save:
             {
-                ConstraintLayout view = (ConstraintLayout) findViewById(R.id.pic_taker);
+                folderAlertDialog.show();
+            }
+            break;
+            case R.id.reset:
+            {
+               // view.removeView(iconCropView1);
+                view.removeViewInLayout(iconCropView1);
+            }
+            break;
+            case R.id.btn_save:
+            {
+
                 view.setDrawingCacheEnabled(true);
                 view.buildDrawingCache();
                 Bitmap bm = view.getDrawingCache();
-                folderAlertDialog.show();
+                String folderNameString = folderName.getText().toString();
+                folderAlertDialog.dismiss();
+                if (folderNameString.isEmpty())
+                {
 
-                saveImageInFirebase(bm,folderName.getText().toString());
+                    Toast.makeText(getApplicationContext(),"Enter The Folder Name",Toast.LENGTH_SHORT).show();
+                }
+                else {
 
+                    folderName.setText("");
+                    saveImageInFirebase(bm, folderNameString);
+                    createDirectoryAndSaveFile(bm,folderNameString);
+
+
+                }
             }
 
 
@@ -260,5 +292,72 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
               }
           });
     }
+    private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
+        if(Build.VERSION.SDK_INT >=Build.VERSION_CODES.R)
+        {
+            Toast.makeText(getApplicationContext(),"Your are in Version R",Toast.LENGTH_SHORT).show();
+            String path1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/Image_Annotation_App";
+            createFolder(path1);
+            if (createFolder(path1).exists()) {
+                File file = new File(path1+"/"+fileName);
+                if (file.exists()) {
+                } else {
+                    createFolder(path1+"/"+fileName);
+                }
+            }
+            saveImage(imageToSave,fileName,path1+"/"+fileName);
+        }
+        else {
+            String path = Environment.getExternalStorageDirectory() + "/Image_Annotation_App";
+            createFolder(path);
+            if (createFolder(path).exists()) {
+                File file = new File(path+"/"+fileName);
+                if (file.exists()) {
+                } else {
+                    createFolder(path+"/"+fileName);
+                }
+            }
+            saveImage(imageToSave,fileName,path+"/"+fileName);
 
+        }
+    }
+
+
+
+    public File createFolder(String dirpath)
+    {
+        File dir = new File(dirpath);
+        if(dir.isDirectory())
+        {
+
+        }
+        else {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+
+
+
+    public void saveImage(Bitmap bms, String imagename, String path)
+    {
+        File file = new File(path,imagename+System.currentTimeMillis()+".png");
+        try {
+            outputStream = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        bms.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+        try {
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
